@@ -1,7 +1,8 @@
 class Countdown {
   constructor(cdnTime) {
+    const validatedTime = this.valitateTime(cdnTime);
     // initiated time for the countdown to close
-    this.initiatedCountdown = new Date(cdnTime).getTime();
+    this.initiatedCountdown = new Date(validatedTime).getTime();
     // previous states are stored here
     this.states = {
       days: 0,
@@ -53,8 +54,68 @@ class Countdown {
   stop() {
     clearInterval(this.mainTimeOut);
   }
+  // this function validates the user submitted time
+  valitateTime(time) {
+    // throwing error if the date is not valid
+    if (!time.date || time.date > 31 || typeof time.date !== "string")
+      throw new Error("Put a valid date [example: '02' or '16']");
+    const date = time.date.slice(0, 2);
+    // name of months
+    const monthNames = [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+    ];
+    const isValidMonth =
+      (time.month &&
+        monthNames.includes(time.month.toLowerCase()) &&
+        time.month !== "string") ||
+      false;
+    // throwing error if the month is not valid
+    if (!isValidMonth)
+      throw new Error(
+        "Provide a valide month name [example: 'february' or 'February']"
+      );
+    const month = this.toUpperCase(time.month).slice(0, 3);
+
+    // throwing error if the year is not valid
+    if (!time.year || typeof time.year !== "string")
+      throw new Error("Put a valid year [example: '2022']");
+    const year = time.year.slice(0, 4);
+
+    // throwing error if the hour is not valid
+    if (!time.hour || typeof time.hour !== "string" || time.hour > 24)
+      throw new Error("Put a valid hour [example: '20']");
+    const hour = time.hour.slice(0, 2);
+
+    // throwing error if the minute is not valid
+    if (!time.minute || typeof time.minute !== "string" || time.minute > 60)
+      throw new Error("Put a valid minute [example: '60']");
+    const minute = time.minute.slice(0, 2);
+
+    // throwing error if the second is not valid
+    if (!time.second || typeof time.second !== "string" || time.second > 60)
+      throw new Error("Put a valid second [example: '60']");
+    const second = time.second.slice(0, 2);
+
+    return `${month} ${date}, ${year} ${hour}:${minute}:${second}`;
+  }
+  // this method helps converting string to upper case
+  toUpperCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 }
 const countdownTimer = (initatedTime) => {
   return new Countdown(initatedTime);
 };
+
 export default countdownTimer;
