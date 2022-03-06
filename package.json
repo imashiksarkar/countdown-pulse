@@ -1,6 +1,6 @@
 {
   "name": "countdown-pulse",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "It's an NPM package that triggers an individual method when the appropriate action occurs",
   "main": "index.js",
   "scripts": {
