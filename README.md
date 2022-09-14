@@ -1,3 +1,4 @@
+```javascript
 import cdn from "./node_modules/countdown-pulse/index.js";
 
 const htmlTimer = document.querySelector("#timer"),
@@ -31,3 +32,4 @@ timer.calcHours = (time) => {
 hour.innerText = time;
 console.log(time, "hh");
 };
+```
