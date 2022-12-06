@@ -1,5 +1,5 @@
 ```javascript
-import cdn from "./node_modules/countdown-pulse/index.js";
+import cdn from "countdown-pulse";
 
 const htmlTimer = document.querySelector("#timer"),
   hour = htmlTimer.querySelector("#hh"),
