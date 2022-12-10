@@ -1,10 +1,10 @@
+# ⤴️ Installation
+```javascript
+$ npm i countdown-pulse
+```
+# 📃 How to use
 ```javascript
 import cdn from "countdown-pulse";
-
-const htmlTimer = document.querySelector("#timer"),
-  hour = htmlTimer.querySelector("#hh"),
-  minute = htmlTimer.querySelector("#mm"),
-  second = htmlTimer.querySelector("#ss");
 
 const timer = cdn({
   date: "05",
@@ -16,20 +16,22 @@ const timer = cdn({
 });
 
 // only runs when seconds change
-timer.calcSeconds = (time) => {
-  second.innerText = time;
-  console.log(time, "ss");
+timer.calcSeconds = (seconds) => {
+  console.log(`${seconds} left...`);
 };
 
 // only runs when minutes change
-timer.calcMinutes = (time) => {
-  minute.innerText = time;
-  console.log(time, "mm");
+timer.calcMinutes = (minutes) => {
+  console.log(`${minutes} left...`);
 };
 
 // only runs when hours change
-timer.calcHours = (time) => {
-  hour.innerText = time;
-  console.log(time, "hh");
+timer.calcHours = (hours) => {
+  console.log(`${hours} left...`);
+};
+
+// only runs when hours change
+timer.calcDays = (days) => {
+  console.log(`${days} left...`);
 };
 ```

@@ -1,8 +1,8 @@
 {
   "name": "countdown-pulse",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "It's an NPM package that triggers an individual method when the appropriate action occurs",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,10 +15,13 @@
     "timer",
     "pulse"
   ],
-  "author": "Ashik Sarkar",
+  "author": "Ashik Sarkar <ashiksarkar.s18@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/imashiksarkar/countdown-pulse/issues"
   },
-  "homepage": "https://github.com/imashiksarkar/countdown-pulse#readme"
+  "homepage": "https://github.com/imashiksarkar/countdown-pulse#readme",
+  "files": [
+    "lib/**/*"
+  ]
 }
