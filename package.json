@@ -4,7 +4,10 @@
   "description": "It's an NPM package that triggers an individual method when the appropriate action occurs",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node src/__test__/test.js",
+    "dev": "tsc && node lib/index.js",
+    "build": "tsc",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -23,5 +26,8 @@
   "homepage": "https://github.com/imashiksarkar/countdown-pulse#readme",
   "files": [
     "lib/**/*"
-  ]
+  ],
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
 }
