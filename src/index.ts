@@ -1,34 +1,193 @@
-//@types
-import { Cb, CountdownInputType, stateType } from "./types/index";
-//@timer
-class Timer extends AbortController {
-  private timer: null | number = null;
-  private cb: Cb | null = null;
+namespace Types {
+  // Internal Types
+  type MonthType =
+    | "JANUARY"
+    | "FEBRUARY"
+    | "MARCH"
+    | "APRIL"
+    | "MAY"
+    | "JUN"
+    | "JULY"
+    | "AUGUST"
+    | "SEPTEMBER"
+    | "OCTOBER"
+    | "NOVEMBER"
+    | "DECEMBER";
 
+  type DayOfMonth =
+    | 1
+    | 2
+    | 3
+    | 4
+    | 5
+    | 6
+    | 7
+    | 8
+    | 9
+    | 10
+    | 11
+    | 12
+    | 13
+    | 14
+    | 15
+    | 16
+    | 17
+    | 18
+    | 19
+    | 20
+    | 21
+    | 22
+    | 23
+    | 24
+    | 25
+    | 26
+    | 27
+    | 28
+    | 29
+    | 30
+    | 31;
+
+  type HourOfDay =
+    | 0
+    | 1
+    | 2
+    | 3
+    | 4
+    | 5
+    | 6
+    | 7
+    | 8
+    | 9
+    | 10
+    | 11
+    | 12
+    | 13
+    | 14
+    | 15
+    | 16
+    | 17
+    | 18
+    | 19
+    | 20
+    | 21
+    | 22
+    | 23
+    | 24;
+  type MinuteNSecondType =
+    | 0
+    | 1
+    | 2
+    | 3
+    | 4
+    | 5
+    | 6
+    | 7
+    | 8
+    | 9
+    | 10
+    | 11
+    | 12
+    | 13
+    | 14
+    | 15
+    | 16
+    | 17
+    | 18
+    | 19
+    | 20
+    | 21
+    | 22
+    | 23
+    | 24
+    | 25
+    | 26
+    | 27
+    | 28
+    | 29
+    | 30
+    | 31
+    | 32
+    | 33
+    | 34
+    | 35
+    | 36
+    | 37
+    | 38
+    | 39
+    | 40
+    | 41
+    | 42
+    | 43
+    | 44
+    | 45
+    | 46
+    | 47
+    | 48
+    | 49
+    | 50
+    | 51
+    | 52
+    | 53
+    | 54
+    | 55
+    | 56
+    | 57
+    | 58
+    | 59
+    | 60;
+
+  // External Types
+  export type Cb = (res?: number) => void;
+  export type CountdownInputType = {
+    date: DayOfMonth;
+    month: MonthType;
+    year: number;
+    hour: HourOfDay;
+    minute: MinuteNSecondType;
+    second: MinuteNSecondType;
+  };
+  export type stateType = {
+    [key: string]: number;
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  };
+}
+
+// Timer that runs after a certain delay
+class Timer extends AbortController {
+  private timerRef: null | number = null;
+  private cb: Types.Cb | null = null;
   constructor(delay = 1) {
     super();
-    this.timer = setInterval(this.tick.bind(this), delay * 1000);
-    // register an abort signal on the controller
-    this.signal.addEventListener("abort", this.stop.bind(this));
+    this.timerRef = setInterval(this.tick.bind(this), delay * 1000);
+    // init liesteners
+    this.eventLiesteners();
   }
-
-  clock(cb: Cb | null) {
-    this.cb = cb;
-  }
-
+  // runs the callback every single delayed time
   private tick() {
-    if (!this.cb) return this.stop();
-    this.cb(1);
+    if (!this.cb) return this.abort();
+    this.cb();
   }
-
-  stop() {
-    clearInterval(this.timer ?? 0);
+  // takes a callback function set it to cb variable
+  clock(cb: Types.Cb | null) {
+    this.cb = cb;
+    // if the callback was not passed the stop the timer
+    if (!cb) this.abort();
+  }
+  // liestener for abort controller
+  eventLiesteners() {
+    // register an abort signal on the controller
+    this.signal.addEventListener("abort", () =>
+      clearInterval(this.timerRef ?? 0)
+    );
   }
 }
 
-//@cdn
+// Countdown that provides calculation features
 class Countdown extends Timer {
-  private cdnInputeState: CountdownInputType;
+  private cdnInputeState: Types.CountdownInputType;
   private initiatedTime: number;
   private readonly initState = {
     days: 0,
@@ -36,9 +195,20 @@ class Countdown extends Timer {
     minutes: 0,
     seconds: 0,
   };
-  private state: stateType;
-  constructor(cdnInputeState: CountdownInputType) {
-    super();
+  private state: Types.stateType;
+  private callbacks: {
+    [key: string]: null | Types.Cb;
+  } = {
+    days: null,
+    hours: null,
+    minutes: null,
+    seconds: null,
+  };
+
+  constructor(cdnInputeState: Types.CountdownInputType) {
+    // parameter 1 passed as 1 second to timer class constructor
+    super(1);
+    // get the countdown time details
     this.cdnInputeState = cdnInputeState;
 
     // throw error if the year is invalid
@@ -48,12 +218,13 @@ class Countdown extends Timer {
     }
     const { month, date, year, hour, minute, second } = this.cdnInputeState;
     const timeFormat = `${month} ${date}, ${year} ${hour}:${minute}:${second}`;
-    console.log("date=>", timeFormat);
-
     this.initiatedTime = new Date(timeFormat).getTime();
+    // observes the state value changes
     this.state = this.observer();
+    // clock from Timer class is called and passed the callback
     this.clock(this.calc);
   }
+  // keeps watching for value changes
   private calc() {
     const { days, hours, minutes, seconds } = this.calculateTime();
     if (this.state.days !== days) this.state.days = days;
@@ -61,18 +232,9 @@ class Countdown extends Timer {
     if (this.state.minutes !== minutes) this.state.minutes = minutes;
     if (this.state.seconds !== seconds) this.state.seconds = seconds;
   }
-
-  capitalize(str: string) {
-    str = str.toLowerCase();
-    return str.slice(0, 1).toUpperCase() + str.slice(1, 3);
-  }
-
+  // calculates the time
   private calculateTime() {
-    // time difference between initated time and current time
-    // console.log(this.initiatedTime);
-
     const timeDifferent = this.initiatedTime - new Date().getTime();
-
     // calculation for days, hours, minutes and seconds
     const days = Math.floor(timeDifferent / (1000 * 60 * 60 * 24));
     const hours = Math.floor(
@@ -85,27 +247,23 @@ class Countdown extends Timer {
 
     return { days, hours, minutes, seconds };
   }
-
-  private callbacks: {
-    [key: string]: null | Cb;
-  } = {
-    days: null,
-    hours: null,
-    minutes: null,
-    seconds: null,
-  };
-  getDays(cb: Cb) {
+  // takes a callback for days and sets to callbacks object
+  getDays(cb: Types.Cb) {
     this.callbacks.days = cb;
   }
-  getHours(cb: Cb) {
+  // takes a callback for hours and sets to callbacks object
+  getHours(cb: Types.Cb) {
     this.callbacks.hours = cb;
   }
-  getMinutes(cb: Cb) {
+  // takes a callback for minutes and sets to callbacks object
+  getMinutes(cb: Types.Cb) {
     this.callbacks.minutes = cb;
   }
-  getSeconds(cb: Cb) {
+  // takes a callback for seconds and sets to callbacks object
+  getSeconds(cb: Types.Cb) {
     this.callbacks.seconds = cb;
   }
+  // actually runs the callback when only it's value change
   runAll(property: string, value: number) {
     if (property === "days" && this.callbacks.days) {
       this.callbacks.days(value);
@@ -120,12 +278,12 @@ class Countdown extends Timer {
       this.callbacks.seconds(value);
     }
   }
+  // observer implementation
   observer() {
     const self = this;
     return new Proxy(this.initState, {
-      set(target: stateType, property: string, value: number) {
+      set(target: Types.stateType, property: string, value: number) {
         self.runAll.call(self, property, value);
-
         // Update the property
         target[property] = value;
         // Return true to indicate the property was set
@@ -135,28 +293,5 @@ class Countdown extends Timer {
   }
 }
 
-try {
-  const cdn = new Countdown({
-    date: 30,
-    month: "JANUARY",
-    year: 2025,
-    hour: 0,
-    minute: 0,
-    second: 0,
-  });
-  //   cdn.stop();
-  cdn.getDays((res) => {
-    console.log("Days =>", res);
-  });
-  cdn.getHours((res) => {
-    console.log("Hours =>", res);
-  });
-  cdn.getMinutes((res) => {
-    console.log("Minutes =>", res);
-  });
-  cdn.getSeconds((res) => {
-    console.log("Seconds =>", res);
-  });
-} catch (error) {
-  console.log(error);
-}
+// exporting countdown for lib usages
+export default Countdown;
