@@ -7,10 +7,10 @@ $ npm i countdown-pulse
 # 📃 How to use
 
 ```javascript
-import cdn from "countdown-pulse";
+import CdnTimer from "countdown-pulse";
 
 try {
-  const cdn = new Countdown({
+  const cdn = new CdnTimer({
     date: 30,
     month: "JANUARY",
     year: 2025,
@@ -20,22 +20,22 @@ try {
   });
 
   // only runs when days change
-  cdn.getDays((res) => {
+  cdn.calcDays((res) => {
     console.log("Days =>", res);
   });
 
   // only runs when hours change
-  cdn.getHours((res) => {
+  cdn.calcHours((res) => {
     console.log("Hours =>", res);
   });
 
   // only runs when minutes change
-  cdn.getMinutes((res) => {
+  cdn.calcMinutes((res) => {
     console.log("Minutes =>", res);
   });
 
   // only runs when seconds change
-  cdn.getSeconds((res) => {
+  cdn.calcSeconds((res) => {
     console.log("Seconds =>", res);
   });
 } catch (error) {

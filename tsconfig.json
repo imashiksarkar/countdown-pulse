@@ -2,8 +2,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib",
-    "module": "commonjs",
-    "target": "es6",
+    "module": "NodeNext",
+    "target": "ES6",
     "declaration": true,
     "declarationDir": "lib/types"
   },
