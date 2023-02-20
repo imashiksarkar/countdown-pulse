@@ -137,7 +137,8 @@ namespace Types {
     | 60;
 
   // External Types
-  export type Cb = (res?: number) => void;
+  export type Cb = () => void;
+  export type CbCalc = (res: number) => void;
   export type CountdownInputType = {
     date: DayOfMonth;
     month: MonthType;
@@ -159,20 +160,13 @@ namespace Types {
 class Timer {
   private timerRef: NodeJS.Timer;
   private cb: Types.Cb | null = null;
-  public stop: (reason?: any) => void;
-  private signal: AbortSignal;
 
   constructor(delay = 1) {
-    const { abort, signal } = new AbortController();
-    this.stop = abort;
-    this.signal = signal;
     //init timer
-    this.timerRef = setInterval(this.tick.bind(this), delay * 1000);
-    // init liesteners
-    this.eventLiesteners();
+    this.timerRef = setInterval(this.start.bind(this), delay * 1000);
   }
   // runs the callback every single delayed time
-  private tick() {
+  start() {
     if (!this.cb) return this.stop();
     this.cb();
   }
@@ -182,12 +176,8 @@ class Timer {
     // if the callback was not passed the stop the timer
     if (!cb) this.stop();
   }
-  // liestener for abort controller
-  private eventLiesteners() {
-    // register an abort signal on the controller
-    this.signal.addEventListener("abort", () =>
-      clearInterval(this.timerRef ?? 0)
-    );
+  stop() {
+    clearInterval(this.timerRef);
   }
 }
 
@@ -203,7 +193,7 @@ class Countdown extends Timer {
   };
   private state: Types.stateType;
   private callbacks: {
-    [key: string]: null | Types.Cb;
+    [key: string]: null | Types.CbCalc;
   } = {
     days: null,
     hours: null,
@@ -211,9 +201,9 @@ class Countdown extends Timer {
     seconds: null,
   };
 
-  constructor(cdnInputeState: Types.CountdownInputType) {
+  constructor(cdnInputeState: Types.CountdownInputType, delay = 1) {
     // parameter 1 passed as 1 second to timer class constructor
-    super(1);
+    super(delay);
     // get the countdown time details
     this.cdnInputeState = cdnInputeState;
 
@@ -254,19 +244,19 @@ class Countdown extends Timer {
     return { days, hours, minutes, seconds };
   }
   // takes a callback for days and sets to callbacks object
-  calcDays(cb: Types.Cb) {
+  calcDays(cb: Types.CbCalc) {
     this.callbacks.days = cb;
   }
   // takes a callback for hours and sets to callbacks object
-  calcHours(cb: Types.Cb) {
+  calcHours(cb: Types.CbCalc) {
     this.callbacks.hours = cb;
   }
   // takes a callback for minutes and sets to callbacks object
-  calcMinutes(cb: Types.Cb) {
+  calcMinutes(cb: Types.CbCalc) {
     this.callbacks.minutes = cb;
   }
   // takes a callback for seconds and sets to callbacks object
-  calcSeconds(cb: Types.Cb) {
+  calcSeconds(cb: Types.CbCalc) {
     this.callbacks.seconds = cb;
   }
   // actually runs the callback when only it's value change
