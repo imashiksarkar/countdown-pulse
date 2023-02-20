@@ -157,7 +157,7 @@ namespace Types {
 
 // Timer that runs after a certain delay
 class Timer {
-  private timerRef: null | number = null;
+  private timerRef: NodeJS.Timer;
   private cb: Types.Cb | null = null;
   public stop: (reason?: any) => void;
   private signal: AbortSignal;
@@ -166,7 +166,7 @@ class Timer {
     const { abort, signal } = new AbortController();
     this.stop = abort;
     this.signal = signal;
-    // super();
+    //init timer
     this.timerRef = setInterval(this.tick.bind(this), delay * 1000);
     // init liesteners
     this.eventLiesteners();
