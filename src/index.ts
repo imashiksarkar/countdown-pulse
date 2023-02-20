@@ -156,28 +156,34 @@ namespace Types {
 }
 
 // Timer that runs after a certain delay
-class Timer extends AbortController {
+class Timer {
   private timerRef: null | number = null;
   private cb: Types.Cb | null = null;
+  public stop: (reason?: any) => void;
+  private signal: AbortSignal;
+
   constructor(delay = 1) {
-    super();
+    const { abort, signal } = new AbortController();
+    this.stop = abort;
+    this.signal = signal;
+    // super();
     this.timerRef = setInterval(this.tick.bind(this), delay * 1000);
     // init liesteners
     this.eventLiesteners();
   }
   // runs the callback every single delayed time
   private tick() {
-    if (!this.cb) return this.abort();
+    if (!this.cb) return this.stop();
     this.cb();
   }
   // takes a callback function set it to cb variable
-  clock(cb: Types.Cb | null) {
+  protected clock(cb: Types.Cb | null) {
     this.cb = cb;
     // if the callback was not passed the stop the timer
-    if (!cb) this.abort();
+    if (!cb) this.stop();
   }
   // liestener for abort controller
-  eventLiesteners() {
+  private eventLiesteners() {
     // register an abort signal on the controller
     this.signal.addEventListener("abort", () =>
       clearInterval(this.timerRef ?? 0)
@@ -210,10 +216,11 @@ class Countdown extends Timer {
     super(1);
     // get the countdown time details
     this.cdnInputeState = cdnInputeState;
+    console.log(this.stop);
 
     // throw error if the year is invalid
     if (this.cdnInputeState.year < new Date().getFullYear()) {
-      this.abort();
+      this.stop();
       throw new Error("Year Must Be Greater Than Current Year");
     }
     const { month, date, year, hour, minute, second } = this.cdnInputeState;
@@ -248,23 +255,23 @@ class Countdown extends Timer {
     return { days, hours, minutes, seconds };
   }
   // takes a callback for days and sets to callbacks object
-  getDays(cb: Types.Cb) {
+  calcDays(cb: Types.Cb) {
     this.callbacks.days = cb;
   }
   // takes a callback for hours and sets to callbacks object
-  getHours(cb: Types.Cb) {
+  calcHours(cb: Types.Cb) {
     this.callbacks.hours = cb;
   }
   // takes a callback for minutes and sets to callbacks object
-  getMinutes(cb: Types.Cb) {
+  calcMinutes(cb: Types.Cb) {
     this.callbacks.minutes = cb;
   }
   // takes a callback for seconds and sets to callbacks object
-  getSeconds(cb: Types.Cb) {
+  calcSeconds(cb: Types.Cb) {
     this.callbacks.seconds = cb;
   }
   // actually runs the callback when only it's value change
-  runAll(property: string, value: number) {
+  private runAll(property: string, value: number) {
     if (property === "days" && this.callbacks.days) {
       this.callbacks.days(value);
     }
@@ -279,7 +286,7 @@ class Countdown extends Timer {
     }
   }
   // observer implementation
-  observer() {
+  private observer() {
     const self = this;
     return new Proxy(this.initState, {
       set(target: Types.stateType, property: string, value: number) {
