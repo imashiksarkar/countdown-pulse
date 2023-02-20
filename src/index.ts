@@ -216,7 +216,6 @@ class Countdown extends Timer {
     super(1);
     // get the countdown time details
     this.cdnInputeState = cdnInputeState;
-    console.log(this.stop);
 
     // throw error if the year is invalid
     if (this.cdnInputeState.year < new Date().getFullYear()) {
