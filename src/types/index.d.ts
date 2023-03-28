@@ -1,33 +1,36 @@
 // External Types
-export type Cb = () => void;
+export declare namespace Types {
+  export type Cb = () => void;
+  export type CbCalc = (res: number) => void;
+  export interface CountdownInputType {
+    date: DayOfMonth;
+    month: MonthType;
+    year: number;
+    hour: HourOfDay;
+    minute: MinuteNSecondType;
+    second: MinuteNSecondType;
+  }
+  export interface StateType {
+    [key: string]: number;
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }
 
-export type CbCalc = (res: number) => void;
+  export enum ReducerTypes {
+    days = "days",
+    hours = "hours",
+    minutes = "minutes",
+    seconds = "seconds",
+  }
+  export type DispatchType = (action: {
+    type: string;
+    payload: number;
+  }) => void;
 
-export type CountdownInputType = {
-  date: DayOfMonth;
-  month: MonthType;
-  year: number;
-  hour: HourOfDay;
-  minute: MinuteNSecondType;
-  second: MinuteNSecondType;
-};
-export interface StateType {
-  [key: string]: number;
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
+  export type RunCallbackType = (property: string, value: number) => void;
 }
-
-export enum ReducerTypes {
-  days = "days",
-  hours = "hours",
-  minutes = "minutes",
-  seconds = "seconds",
-}
-export type DispatchType = (action: { type: string; payload: number }) => void;
-
-export type RunCallbackType = (property: string, value: number) => void;
 
 // Internal Types
 type MonthType =

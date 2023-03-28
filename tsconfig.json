@@ -3,10 +3,11 @@
     "strict": true,
     "rootDir": "src",
     "outDir": "lib",
-    "module": "NodeNext",
+    "module": "ES6",
     "target": "ES6",
     "declaration": true,
-    "declarationDir": "lib/types"
+    "declarationDir": "lib/types",
+    "noEmitOnError": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/__test__/*"]
