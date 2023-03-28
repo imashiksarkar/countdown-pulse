@@ -46,86 +46,56 @@ try {
 # 📃 How to use With React
 
 ```typescript
-import CdnTimer from "countdown-pulse";
-import { useCallback, useEffect, useReducer } from "react";
-import { InitState, ReducerType, Types } from "./index.d";
+import Countdown, { cdnReducer, initState } from "countdown-pulse";
+import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 
-const initState: InitState = {
-  days: 0,
-  hours: 0,
-  minutes: 0,
-  seconds: 0,
-};
-
-const reducer: ReducerType = (state, action) => {
-  switch (action.type) {
-    case Types.days:
-      return { ...state, days: action.payload };
-    case Types.hours:
-      return { ...state, hours: action.payload };
-    case Types.minutes:
-      return { ...state, minutes: action.payload };
-    case Types.seconds:
-      return { ...state, seconds: action.payload };
-  }
-  return state;
-};
+interface CustomEvent {
+  target: {
+    name: string;
+  };
+}
+type extendedMouseEvent = MouseEvent<HTMLButtonElement> & CustomEvent;
 
 function App() {
-  const [state, dispatch] = useReducer<ReducerType>(reducer, initState);
-  const { days, hours, minutes, seconds } = state;
-
-  let cdn: CdnTimer | null = null;
+  const [cdnState, cdnDispatch] = useReducer(cdnReducer, initState);
+  const { days, hours, minutes, seconds } = cdnState;
+  let cdn: Countdown | null = null;
 
   useEffect(() => {
     try {
-      cdn = new CdnTimer({
-        date: 30,
-        month: "JANUARY",
-        year: 2025,
+      cdn = new Countdown({
+        date: 5,
         hour: 0,
         minute: 0,
+        month: "FEBRUARY",
         second: 0,
+        year: 2024,
       });
+
+      cdn.cdnDispatch(cdnDispatch);
     } catch (error) {
-      console.log(error);
-    }
-    // only runs when days change
-    cdn?.calcDays((res) => {
-      dispatch({ type: Types.days, payload: res });
-    });
-
-    // only runs when hours change
-    cdn?.calcHours((res) => {
-      dispatch({ type: Types.hours, payload: res });
-    });
-
-    // only runs when minutes change
-    cdn?.calcMinutes((res) => {
-      dispatch({ type: Types.minutes, payload: res });
-    });
-
-    // only runs when seconds change
-    cdn?.calcSeconds((res) => {
-      dispatch({ type: Types.seconds, payload: res });
-    });
-
-    // cleanup
-    return () => {
       cdn?.stop();
-    };
+    }
+    // cleanup
+    return () => cdn?.stop();
   }, []);
 
-  const handleStop = useCallback(() => {
-    cdn?.stop();
-  }, [cdn]);
+  const handleBtnClick = useCallback((e: extendedMouseEvent) => {
+    if (e.target.name === "start") cdn?.start();
+    if (e.target.name === "stop") cdn?.stop();
+  }, []);
 
   return (
     <div>
       <span>
-        Days: {days} - Hours: {hours} - Minutes: {minutes} - Seconds: {seconds}
+        Days: {days} | Hours: {hours} | Minutes: {minutes} | Seconds: {seconds}
+        <button type="button" name="stop" onClick={handleBtnClick}>
+          Stop Timer
+        </button>
+        <button type="button" name="start" onClick={handleBtnClick}>
+          Start Timer
+        </button>
       </span>
-      <button onClick={handleStop}>Stop</button>
     </div>
   );
 }
